@@ -1,6 +1,9 @@
 import os
 from bs4 import BeautifulSoup
 import requests
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+import time
 
 path = r"C:\Users\User\Desktop"
 projectname = "dataset"
@@ -27,7 +30,7 @@ def parse_reviews(change):
 
 def write_reviews(reviews, change, count):
     for review_text in reviews:
-        if count > 1000:
+        if count < 1000:
             with open(fr"C:\Users\User\Desktop\dataset\{change}\{change}_{count:04}.txt", "w", encoding="utf-8") as file:
                 file.write(review_text)
             count += 1
@@ -38,17 +41,21 @@ def write_reviews(reviews, change, count):
 
 good_count = 0
 bad_count = 0
-for i in range (1, 2000):
+for i in range (1, 2300):
     url = f"https://www.kinopoisk.ru/film/251733/reviews/ord/date/status/all/perpage/10/page/{i}/"
     headers = {
         "Accept": "*/*",
         "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.888 YaBrowser/23.9.0.0 Safari/537.36"
     }
     src = requests.get(url, headers = headers).text
-
-    # with open("index.html", encoding="utf-8") as file:
-    #     src = file.read()
+    options = webdriver.ChromeOptions()
+    service = webdriver.ChromeService(executable_path = 'C:\\Users\\User\\Desktop\\lub1\\driver\\yandexdriver.exe')
+    driver = webdriver.Chrome(service=service)
+    driver.get(url)
+    src = driver.page_source
     soup = BeautifulSoup(src, "lxml")
+    time.sleep(3)
+    driver.quit()
 
     bad_reviews = parse_reviews("bad")
     bad_count = write_reviews(bad_reviews, "bad", bad_count)
