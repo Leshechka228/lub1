@@ -39,23 +39,21 @@ def create_project_folders():
             os.mkdir(folder)
     return desktop_path
 
-def process_reviews():
-    path = create_project_folders()
+def process_reviews(path):
 
     bad_count = 0
     good_count = 0
 
     for i in range(1, 2300):
         url = f"https://www.kinopoisk.ru/film/251733/reviews/ord/date/status/all/perpage/10/page/{i}//"
-        # file_path = os.path.abspath("yandexdriver.exe")
-        # service = webdriver.ChromeService(executable_path=file_path)
-        # driver = webdriver.Chrome(service=service)
-        # driver.get(url)
-        # time.sleep(10)
-        # src = driver.page_source
-        src = requests.get(url).text
+        file_path = os.path.abspath("yandexdriver.exe")
+        service = webdriver.ChromeService(executable_path=file_path)
+        driver = webdriver.Chrome(service=service)
+        driver.get(url)
+        time.sleep(10)
+        src = driver.page_source
         soup = BeautifulSoup(src, "lxml")
-        # driver.quit()
+        driver.quit()
 
         bad_reviews = parse_reviews("bad", soup)
         bad_count = write_reviews(path, bad_reviews, "bad", bad_count)
@@ -68,4 +66,5 @@ def process_reviews():
 
 
 if __name__ == "__main__":
-    process_reviews()
+    path = create_project_folders()
+    process_reviews(path)
